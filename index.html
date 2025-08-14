@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Feliz Aniversário!!!</title>
+<style>
+:root{
+  --bg-pink: #FFCBDB;
+  --accent: #f06292;
+  --text: #4a2c2a;
+}
+
+html,body{
+  height:100%;
+  width:100%;
+  margin:0;
+  padding:0;
+  overflow-x:hidden; /* impede rolagem lateral */
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -webkit-text-size-adjust:100%;
+  touch-action: manipulation;
+}
+
+body {
+  background-color: var(--bg-pink);
+  color: var(--text);
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 999;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 40px);
+  grid-auto-rows: 40px;
+  gap: 6px;
+  justify-content: center;
+  align-content: center;
+  transition: opacity 600ms ease, visibility 600ms;
+}
+
+.intro-overlay.fade-out {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.skull {
+  font-size: clamp(18px, 4vw, 36px);
+  color: rgba(255,255,255,0.85);
+  opacity: 0.9;
+  user-select: none;
+  pointer-events: none;
+  text-align: center;
+  line-height: 1;
+  transform: rotate(-6deg);
+}
+
+.hidden-on-start { display:none; }
+
+h1 {
+  margin-top: 36px;
+  font-size: clamp(1.8em, 6vw, 3em);
+  z-index:2;
+  position:relative;
+  line-height:1.05;
+}
+
+p {
+  font-size: clamp(1em, 4vw, 1.25em);
+  margin: 18px auto;
+  padding: 0 12px;
+  max-width: 92%;
+  z-index:2;
+  position:relative;
+  line-height:1.4em;
+}
+
+.images-container {
+  position: relative;
+  width: 100%;
+  max-width: 100vw;
+  height: auto;
+  margin-top: 8px;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.floating-img {
+  max-width: 100%;
+  width: clamp(72px, 24vw, 120px);
+  height: clamp(72px, 24vw, 120px);
+  object-fit: cover;
+  border-radius: 12px;
+  opacity: 0;
+  transform-origin: center;
+  will-change: transform, opacity;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  border: 2px solid rgba(255,255,255,0.12);
+}
+
+@keyframes bounceImg {
+  0% { transform: translateY(-18px) scale(0.9); opacity: 0; }
+  45% { transform: translateY(6px) scale(1.02); opacity: 1; }
+  70% { transform: translateY(-4px) scale(0.98); }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+.show-bounce-img { animation: bounceImg 700ms cubic-bezier(.2,.9,.3,1) forwards; }
+
+@keyframes bounceChar {
+  0% { transform: translateY(-12px) scale(0.98); opacity:0; }
+  50% { transform: translateY(6px) scale(1.06); opacity:1; }
+  80% { transform: translateY(-2px) scale(1); }
+  100% { transform: translateY(0) scale(1); opacity:1; }
+}
+.char { display:inline-block; white-space:pre; opacity:0; transform-origin:center; }
+.show-bounce-char { animation: bounceChar 650ms cubic-bezier(.2,.9,.3,1) forwards; }
+
+.btn {
+  margin: 20px auto;
+  padding: 12px 26px;
+  font-size: clamp(1em,4vw,1.15em);
+  background-color:#fff;
+  color:#000;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  z-index:1000;
+  position:relative;
+  box-shadow:0 6px 18px rgba(0,0,0,0.16);
+  transition: transform 160ms ease, opacity 400ms ease;
+}
+.btn:active { transform: translateY(2px) scale(0.995); }
+.btn.fade-out { opacity:0; transform: scale(0.95); pointer-events:none; }
+
+.parabens {
+  margin-top:16px;
+  font-size: clamp(1.3em,5vw,1.9em);
+  display:none;
+  color:#e91e63;
+  z-index:2;
+  position:relative;
+  transition: opacity 300ms ease;
+}
+
+.heart {
+  position:absolute;
+  width:14px;
+  height:14px;
+  background: rgba(255,0,90,0.95);
+  transform:rotate(45deg);
+  animation: float 9s infinite ease-in-out;
+  opacity:0.45;
+  z-index:0;
+  filter:blur(0.2px);
+}
+.heart::before,.heart::after{
+  content:'';
+  position:absolute;
+  width:14px;
+  height:14px;
+  background: rgba(255,0,90,0.95);
+  border-radius:50%;
+}
+.heart::before{ top:-6px; left:0; }
+.heart::after{ left:-6px; top:0; }
+
+@keyframes float {
+  0% { transform: translateY(100vh) rotate(45deg); opacity:0; }
+  30%{ opacity:0.35; }
+  100%{ transform: translateY(-10vh) rotate(45deg); opacity:0.15; }
+}
+
+canvas#matrix{ width:100vw; height:100vh; display:block; }
+audio{ display:none; }
+
+</style>
+</head>
+<body>
+
+<div id="introOverlay" class="intro-overlay" aria-hidden="false"></div>
+
+<canvas id="matrix" class="hidden-on-start"></canvas>
+
+<h1 id="titulo" class="hidden-on-start">Feliz Aniversário!!!</h1>
+<p id="mensagem" class="hidden-on-start">Feliz aniversário! Que seu dia seja cheio de alegria e que você celebre com as pessoas que ama. Tudo de bom hoje e sempre!</p>
+
+<audio id="player">
+  <source src="./musica.mp3" type="audio/mp3">
+</audio>
+
+<div class="images-container hidden-on-start" id="imagesContainer">
+  <img src="./img/img1.jpg" class="floating-img" alt="Imagem 1">
+  <img src="./img/img2.jpg" class="floating-img" alt="Imagem 2">
+  <img src="./img/img3.jpg" class="floating-img" alt="Imagem 3">
+  <img src="./img/img4.jpg" class="floating-img" alt="Imagem 4">
+  <img src="./img/img5.jpg" class="floating-img" alt="Imagem 5">
+  <img src="./img/img6.jpg" class="floating-img" alt="Imagem 6">
+</div>
+
+<button id="startBtn" class="btn" aria-pressed="false">Clique aqui</button>
+<div class="parabens" id="parabens">🎉 Parabéns MJ 🎉</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<script>
+function wrapTextToChars(el){
+  if(!el) return;
+  const text=el.textContent;
+  el.textContent='';
+  for(let ch of text){
+    const span=document.createElement('span');
+    span.className='char';
+    span.textContent=ch===' ' ? '\u00A0' : ch;
+    el.appendChild(span);
+  }
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  wrapTextToChars(document.getElementById('titulo'));
+  wrapTextToChars(document.getElementById('mensagem'));
+
+  // caveiras tabuleiro
+  const overlay=document.getElementById('introOverlay');
+  const cols=Math.floor(window.innerWidth/40);
+  const rows=Math.floor(window.innerHeight/40);
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      if((r+c)%2===0){
+        const s=document.createElement('div');
+        s.className='skull';
+        s.textContent='💀';
+        overlay.appendChild(s);
+      } else overlay.appendChild(document.createElement('div'));
+    }
+  }
+
+  // iniciar corações contínuos
+  setInterval(()=> criarCoracoes(3),1200);
+});
+
+const startBtn=document.getElementById('startBtn');
+let started=false;
+
+function mostrarParabens(){
+  if(started) return;
+  started=true;
+  startBtn.setAttribute('aria-pressed','true');
+  startBtn.classList.add('fade-out');
+  setTimeout(()=> startBtn.style.display='none',420);
+
+  const overlay=document.getElementById('introOverlay');
+  overlay.classList.add('fade-out');
+  setTimeout(()=> overlay.style.display='none',650);
+
+  document.querySelectorAll('.hidden-on-start').forEach(el=> el.style.display='block');
+
+  const chars=document.querySelectorAll('.char');
+  chars.forEach(ch=>{
+    const delay=90+Math.random()*320;
+    setTimeout(()=> ch.classList.add('show-bounce-char'),delay);
+  });
+
+  const imagens=document.querySelectorAll('.floating-img');
+  imagens.forEach(img=>{
+    const delay=80+Math.random()*420;
+    setTimeout(()=> img.classList.add('show-bounce-img'),delay);
+  });
+
+  const player=document.getElementById('player');
+  player.play().catch(()=> console.warn('Autoplay bloqueado.'));
+
+  confetti({particleCount:60,spread:60,scalar:0.8,origin:{y:0.6}});
+
+  const parabens=document.getElementById('parabens');
+  parabens.style.display='block';
+  parabens.style.opacity='0';
+  setTimeout(()=> parabens.style.opacity='1',60);
+
+  setTimeout(startMatrix,300);
+}
+startBtn.addEventListener('click',mostrarParabens,{passive:true});
+
+function criarCoracoes(n=12){
+  for(let i=0;i<n;i++){
+    const heart=document.createElement('div');
+    heart.className='heart';
+    heart.style.left=Math.random()*100+'vw';
+    heart.style.top='100%';
+    heart.style.animationDuration=(8+Math.random()*6)+'s';
+    heart.style.opacity=(0.35+Math.random()*0.25).toFixed(2);
+    document.body.appendChild(heart);
+    setTimeout(()=> heart.remove(),18000+Math.random()*6000);
+  }
+}
+
+let matrixInterval=null;
+function startMatrix(){
+  const canvas=document.getElementById('matrix');
+  canvas.style.display='block';
+  const ctx=canvas.getContext('2d');
+  function resize(){
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize',resize);
+  let letters='0101 MJ 💖'.split('');
+  let fontSize=Math.max(12,Math.floor(window.innerWidth/90));
+  ctx.font=fontSize+'px monospace';
+  let columns=Math.floor(canvas.width/fontSize);
+  let drops=new Array(columns).fill(1);
+  if(matrixInterval) clearInterval(matrixInterval);
+  matrixInterval=setInterval(()=>{
+    ctx.fillStyle='rgba(255,203,219,0.09)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='rgba(255,105,180,0.9)';
+    ctx.font=fontSize+'px monospace';
+    for(let i=0;i<drops.length;i++){
+      const text=letters[Math.floor(Math.random()*letters.length)];
+      ctx.fillText(text,i*fontSize,drops[i]*fontSize);
+      if(drops[i]*fontSize>canvas.height && Math.random()>0.995) drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+}
+window.addEventListener('pagehide',()=>{if(matrixInterval) clearInterval(matrixInterval);});
+</script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Feliz Aniversário!!!</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #FFCBDB;
+      overflow-x: hidden;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      color: #4a2c2a;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hidden-on-start {
+      display: none;
+    }
+
+    h1 {
+      margin-top: 40px;
+      font-size: clamp(1.8em, 5vw, 3em);
+      z-index: 2;
+      position: relative;
+    }
+
+    p {
+      font-size: clamp(1em, 4vw, 1.5em);
+      margin: 20px auto;
+      padding: 0 10px;
+      max-width: 90%;
+      z-index: 2;
+      position: relative;
+      line-height: 1.4em;
+    }
+
+    .images-container {
+      position: relative;
+      width: 100%;
+      height: auto;
+      margin-top: 10px;
+      z-index: 2;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .floating-img {
+      width: clamp(80px, 25vw, 120px);
+      height: clamp(80px, 25vw, 120px);
+      object-fit: cover;
+      border-radius: 15px;
+      opacity: 0;
+    }
+
+    @keyframes bounceIn {
+      0% {
+        transform: scale(0.3);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 1;
+      }
+      70% {
+        transform: scale(0.9);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .show-bounce {
+      animation: bounceIn 0.8s ease forwards;
+    }
+
+    .btn {
+      margin: 20px auto;
+      padding: 12px 24px;
+      font-size: clamp(1em, 4vw, 1.2em);
+      background-color: #f06292;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      z-index: 3;
+      position: relative;
+    }
+
+    .parabens {
+      margin-top: 20px;
+      font-size: clamp(1.5em, 5vw, 2em);
+      display: none;
+      color: #e91e63;
+      z-index: 2;
+      position: relative;
+    }
+
+    .heart {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: red;
+      transform: rotate(45deg);
+      animation: float 8s infinite ease-in-out;
+      opacity: 0.6;
+      z-index: 0;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: red;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      top: -8px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: -8px;
+      top: 0;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(45deg);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(-10vh) rotate(45deg);
+        opacity: 1;
+      }
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    audio {
+      display: none;
+    }
+
+    /* Ajuste para telas muito pequenas */
+    @media (max-width: 400px) {
+      .floating-img {
+        width: 70px;
+        height: 70px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="matrix" class="hidden-on-start"></canvas>
+
+<h1 class="hidden-on-start">Feliz Aniversário!!!</h1>
+<p class="hidden-on-start">Que seu dia seja cheio de alegria e que você celebre com as pessoas que ama. Tudo de bom hoje e sempre!</p>
+
+<audio id="player">
+  <source src="./musica.mp3" type="audio/mp3">
+  Seu navegador não suporta áudio.
+</audio>
+
+<div class="images-container hidden-on-start">
+  <img src="./img/img1.jpg" class="floating-img" alt="Imagem 1">
+  <img src="./img/img2.jpg" class="floating-img" alt="Imagem 2">
+  <img src="./img/img3.jpg" class="floating-img" alt="Imagem 3">
+  <img src="./img/img4.jpg" class="floating-img" alt="Imagem 4">
+  <img src="./img/img5.jpg" class="floating-img" alt="Imagem 5">
+  <img src="./img/img6.jpg" class="floating-img" alt="Imagem 6">
+</div>
+
+<button class="btn" onclick="mostrarParabens()">Clique aqui</button>
+<div class="parabens" id="parabens">🎉 Parabéns MJ 🎉</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<script>
+  function mostrarParabens() {
+    document.querySelectorAll('.hidden-on-start').forEach(el => {
+      el.style.display = 'block';
+    });
+
+    const imagens = document.querySelectorAll('.floating-img');
+    imagens.forEach((img, index) => {
+      setTimeout(() => {
+        img.classList.add('show-bounce');
+      }, index * 150);
+    });
+
+    document.getElementById('player').play();
+
+    confetti({
+      particleCount: 150,
+      spread: 100,
+      origin: { y: 0.6 }
+    });
+
+    document.getElementById('parabens').style.display = 'block';
+  }
+
+  function criarCoracoes() {
+    for (let i = 0; i < 15; i++) {
+      let heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (5 + Math.random() * 5) + 's';
+      document.body.appendChild(heart);
+    }
+  }
+
+  document.querySelector('.btn').addEventListener('click', criarCoracoes);
+</script>
+
+<script>
+  const canvas = document.getElementById('matrix');
+  const ctx = canvas.getContext('2d');
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+
+  let letters = '0101 MJ 💖'.split('');
+  let fontSize = 14;
+  let columns = canvas.width / fontSize;
+  let drops = [];
+
+  for (let x = 0; x < columns; x++)
+    drops[x] = 1;
+
+  function draw() {
+    ctx.fillStyle = 'rgba(255, 203, 219, 0.1)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#ff69b4';
+    ctx.font = fontSize + 'px monospace';
+    for (let i = 0; i < drops.length; i++) {
+      let text = letters[Math.floor(Math.random() * letters.length)];
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975)
+        drops[i] = 0;
+      drops[i]++;
+    }
+  }
+
+  setInterval(draw, 50);
+
+  window.addEventListener('resize', () => {
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    columns = canvas.width / fontSize;
+    drops = [];
+    for (let x = 0; x < columns; x++)
+      drops[x] = 1;
+  });
+</script>
+
+</body>
+</html>
